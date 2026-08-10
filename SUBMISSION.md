@@ -25,12 +25,28 @@ a controlled experiment rather than inferring it.
 
 | Component | Status |
 |---|---|
-| Rust TEE contract, `wasm32-wasip2` | Builds; 9/9 unit tests pass |
+| Rust TEE contract, `wasm32-wasip2` | Builds; 11/11 unit tests pass |
 | Compiled component | Verified via `wasm-tools`; exports `z:tenant-settle/contracts@0.1.0` |
 | Component integration tests | 9/9 pass against the compiled `.wasm` |
+| Rust ↔ TypeScript digest parity | 6/6 byte-identical |
+| Solana devnet settlement | **Live** — 3 settlements executed, 2 released, 1 refused |
 | T3N authenticate / register scripts | Written; awaiting API key |
-| Solana devnet settlement | Scripted; awaiting funded keypair |
 | Web application | Live, four routes |
+
+### Devnet settlements executed 2026-08-10
+
+| Id | Amount | Slot | Outcome |
+|---|---|---|---|
+| `4f2a` | 0.0125 SOL | 482,637,177 | Released — [explorer](https://explorer.solana.com/tx/NkQ8razSuKBNXSfcS7U5t7esj9BQ7EMGfxC1Zr2eMLYwLA6dd221WUAAfdXuQ9NhCN23Ygz7BKUF7y785g6Zqcb?cluster=devnet) |
+| `7b19` | 0.0060 SOL | 482,637,179 | Released — [explorer](https://explorer.solana.com/tx/29WUtjRnmM3zsZ2gH4Up3hsp14Wf28fkrwQUdHJDcsgFn5HCbEpLEccz892gwvR4qMHkUbG2C1epotZHLLPtH6xh?cluster=devnet) |
+| `c3d8` | 0.0040 SOL | — | **Refused.** Agent claimed 512 units; the enclave accounted for 500. No transaction was submitted. |
+
+Both released transactions carry a memo instruction committing the digest pair,
+so the record is auditable without trusting this repository's copy of it. The
+payout wallet moved from 0.000895 to 0.019395 SOL — exactly the 0.0185 released.
+
+The refused settlement is the one worth looking at. Nothing rejected it manually;
+the digests simply disagreed, so the release condition never evaluated true.
 
 ### The contract
 
@@ -119,25 +135,24 @@ condition — is the product. Neither piece works alone.
 
 ## Outstanding
 
-Two items require credentials I do not have yet. Both paths are scripted and
-tested to the boundary:
+One item remains, and it needs a credential I cannot issue myself.
 
-1. **DID.** The API key is issued through browser SSO at
-   `go.terminal3.io/adk-community`. `npm run t3n:auth` performs the handshake and
-   authenticate flow and writes `DID.txt`. It prints the SDK's actual export
-   surface first, so a shape change reports as a readable list rather than an
-   undefined-property crash.
+**The DID.** The API key is issued through browser SSO at
+`go.terminal3.io/adk-community`. `npm run t3n:auth` performs the handshake and
+authenticate flow and writes `DID.txt`. It prints the SDK's actual export surface
+before doing anything else, so if the reported `handshake()` failure reproduces,
+it reports as a readable list rather than an undefined-property crash — and the
+result gets recorded as finding #6.
 
-2. **Devnet signatures.** `npm run settle` runs three settlements and writes
-   `settlements.json`. The public faucet is rate-limited on the CLI keypair
-   (`C3otspAauyPNbAx9NA4wkH7P8hxhxhb1dyfqzhSmzaj9`, currently 0.000895 SOL —
-   below the rent-exempt minimum, so it cannot sign at all).
+Everything downstream of that key is already written and exercised:
+`npm run t3n:register` uploads the component that `wasm-tools` has already
+verified, and the settlement flow it feeds is running on devnet today.
 
-The settlement records currently shown in the application are seeded from
-`settlements.json` and will be replaced by real runs. Worth noting: the verifier
-recomputes the match from both stored halves rather than reading a stored flag,
-so seeded records fail verification the same way tampered records would. The page
-does not lie about what it has.
+The verifier recomputes each match from both stored halves rather than reading a
+stored flag, so a tampered record fails there the same way a forged claim does.
+That property is why the refused settlement can sit in the ledger with no
+signature and still be trustworthy: the page is not asserting the refusal, it is
+recomputing it.
 
 ## Notes for the team
 

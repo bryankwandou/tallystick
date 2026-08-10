@@ -168,22 +168,22 @@ li em{font-family:'Plex Mono',monospace;font-style:normal;color:var(--ink-3);
   <div class="split">
     <div>
       <p class="label">Claim — signed by the agent</p>
-      <p class="digest">fbcaf223d7db10feea76c32aa0d053dc5022338102dcf1d2bb91d6f8797aa12e</p>
+      <p class="digest">c30054a56c65f699092db0ce7ee7d3f1da6bb71ba0d5f6e85aefc2ce375f3766</p>
       <p class="note" style="margin-top:10px;">Reported <strong class="mono">512</strong> support tickets classified.</p>
     </div>
     <div class="vseam"></div>
     <div>
       <p class="label">Receipt — written inside the enclave</p>
-      <p class="digest bad">277b709b3686956e1595b399192785026f6b90c4aa3016e6ba19feee91f6caf1</p>
+      <p class="digest bad">e72c0672940213fdb5a40faf5c251cb87fec9dca7955a1f337fd4cf6eaba9f8f</p>
       <p class="note" style="margin-top:10px;">Enclave accounted for <strong class="mono">500</strong>.</p>
     </div>
   </div>
 
   <div class="seam broken"><i></i><b></b><i></i></div>
 
-  <p class="lead">Twelve units of drift. The digests diverge, the escrow does not
-  release, and the discrepancy stays attached to that agent&rsquo;s identifier.
-  Nobody had to notice.</p>
+  <p class="lead">Twelve units of drift. The digests diverge, so no transaction
+  was ever submitted and the discrepancy stays attached to that agent&rsquo;s
+  identifier. Nobody had to notice. This ran on devnet on 10 August.</p>
 </section>
 
 <!-- 02 — the problem, stated without hedging -->
@@ -242,7 +242,7 @@ li em{font-family:'Plex Mono',monospace;font-style:normal;color:var(--ink-3);
 <section class="slide">
   <span class="slide-no">04</span>
   <p class="eyebrow">Status</p>
-  <h2>What runs today, and what is honestly still pending.</h2>
+  <h2>It settled on devnet. One payment was refused.</h2>
 
   <div class="grid3">
     <div>
@@ -268,14 +268,28 @@ li em{font-family:'Plex Mono',monospace;font-style:normal;color:var(--ink-3);
 
   <div class="seam"><i></i><b></b><i></i></div>
 
-  <p class="lead">Two things are not done, and the product says so on its own pages
-  rather than showing numbers it cannot back.</p>
-  <p>The T3N registration path is scripted but needs an API key issued through
-  browser sign-in. Devnet settlement is scripted but needs a funded keypair &mdash;
-  the faucet is rate-limited. <strong>The ledger renders empty signatures as empty,
-  and the verifier recomputes every match from both stored halves rather than
-  reading a flag, so seeded records fail verification exactly the way tampered
-  records would.</strong></p>
+  <p class="label" style="margin-bottom:10px;">Devnet, 10 August 2026</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>Id</th><th>Amount</th><th>Slot</th><th>Outcome</th></tr></thead>
+    <tbody>
+      <tr><td class="k mono">4f2a</td><td class="mono">0.0125 SOL</td><td class="mono">482,637,177</td><td><span class="pill ok"><s></s>Released</span></td></tr>
+      <tr><td class="k mono">7b19</td><td class="mono">0.0060 SOL</td><td class="mono">482,637,179</td><td><span class="pill ok"><s></s>Released</span></td></tr>
+      <tr><td class="k mono">c3d8</td><td class="mono">0.0040 SOL</td><td class="mono">&mdash;</td><td><span class="pill bad"><s></s>Refused</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Both released transactions carry a memo committing the digest pair, so the
+  record is auditable without trusting our copy of it. The payout wallet moved
+  <span class="mono">0.000895</span> &rarr; <span class="mono">0.019395</span> SOL
+  &mdash; exactly the amount released. <strong>Nothing rejected the third
+  settlement manually. The digests disagreed, so the release condition never
+  evaluated true.</strong></p>
+
+  <p class="note">Still open: the T3N registration path needs an API key issued
+  through browser sign-in. The component it would upload is already built and
+  verified.</p>
 </section>
 
 <!-- 05 — findings, the bounty's actual currency -->
@@ -346,9 +360,10 @@ li em{font-family:'Plex Mono',monospace;font-style:normal;color:var(--ink-3);
   <span class="slide-no">07</span>
   <p class="eyebrow">Tallystick</p>
   <h1>Pay the agent when the halves match.</h1>
-  <p class="lead">Contract, escrow flow, verifier, and the six findings are all in
-  the public repository. Every number on the previous slides is something you can
-  re-run rather than take on trust.</p>
+  <p class="lead">Contract, settlement flow, verifier, and the six findings are all
+  in the public repository. Every number on the previous slides either resolves on
+  Solana Explorer or re-runs from a clean checkout &mdash; none of it has to be
+  taken on trust.</p>
 
   <div class="seam"><i></i><b></b><i></i></div>
 

@@ -159,12 +159,20 @@ reverted by well-meaning contributors:
 
 ## Status
 
-Devnet only. The contract is tested and builds to a valid WASM component; the
-T3N registration path is scripted but needs a key to exercise. Settlement records
-shown in the app are seeded from `settlements.json` and are replaced by real
-runs — the verifier recomputes the match from both stored halves rather than
-reading a flag, so seeded data fails verification exactly the way tampered data
-would.
+Devnet only. Three settlements ran on 2026-08-10:
+
+| Id | Amount | Slot | Outcome |
+|---|---|---|---|
+| `4f2a` | 0.0125 SOL | 482,637,177 | Released — [tx](https://explorer.solana.com/tx/NkQ8razSuKBNXSfcS7U5t7esj9BQ7EMGfxC1Zr2eMLYwLA6dd221WUAAfdXuQ9NhCN23Ygz7BKUF7y785g6Zqcb?cluster=devnet) |
+| `7b19` | 0.0060 SOL | 482,637,179 | Released — [tx](https://explorer.solana.com/tx/29WUtjRnmM3zsZ2gH4Up3hsp14Wf28fkrwQUdHJDcsgFn5HCbEpLEccz892gwvR4qMHkUbG2C1epotZHLLPtH6xh?cluster=devnet) |
+| `c3d8` | 0.0040 SOL | — | Refused; no transaction submitted |
+
+Both released transactions carry a memo committing the digest pair. The payout
+wallet moved 0.000895 → 0.019395 SOL, exactly the amount released.
+
+The T3N registration path is scripted but needs an API key to exercise. The
+verifier recomputes each match from both stored halves rather than reading a
+flag, so a tampered record fails there the same way a forged claim would.
 
 ## Licence
 
