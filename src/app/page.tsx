@@ -100,16 +100,17 @@ function Hero() {
             </ButtonLink>
           </div>
 
-          {/* Figures that can be checked against the repository, not invented
-              traction metrics. */}
+          {/* Figures that can be checked against the chain or re-run from the
+              repository, not invented traction metrics. */}
           <dl className="mt-12 grid max-w-md grid-cols-3 gap-6 border-t border-hairline pt-6">
-            <Stat label="Digest" value="SHA" unit="256" />
-            <Stat label="Contract tests" value="11" unit="pass" />
-            <Stat label="Component tests" value="9" unit="pass" />
+            <Stat label="Settled" value="0.0185" unit="SOL" />
+            <Stat label="Released" value="2" unit="of 3" />
+            <Stat label="Tests" value="26" unit="pass" />
           </dl>
           <p className="mt-4 max-w-md text-[12px] leading-relaxed text-muted-foreground">
-            Figures above are what the repository verifies, not usage numbers.
-            Devnet settlement is scripted and awaiting a funded keypair.
+            Two settlements moved value on devnet. The third was refused because
+            the halves disagreed. Every figure resolves on Solana Explorer or
+            re-runs from the repository.
           </p>
         </div>
 
@@ -183,7 +184,7 @@ function ReceiptPanel() {
           <div>
             <FieldLabel>Amount</FieldLabel>
             <p className="font-mono tnum text-[19px] font-medium">
-              0.2500
+              0.0125
               <span className="ml-1.5 text-[12px] font-normal text-muted-foreground">
                 SOL
               </span>
@@ -201,12 +202,19 @@ function ReceiptPanel() {
         </div>
 
         <div className="mt-5">
-          <FieldLabel>Digest — both halves</FieldLabel>
-          <Mono
-            value="2cdad4867c37aa98bbe5ed03c8d6164fd01399a28fc30f452483c085e1035efa"
-            label="Settlement digest"
-            className="text-muted-foreground"
-          />
+          <FieldLabel>Devnet signature — slot 482,637,177</FieldLabel>
+          <a
+            href="https://explorer.solana.com/tx/NkQ8razSuKBNXSfcS7U5t7esj9BQ7EMGfxC1Zr2eMLYwLA6dd221WUAAfdXuQ9NhCN23Ygz7BKUF7y785g6Zqcb?cluster=devnet"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-block rounded-sm underline decoration-hairline underline-offset-4 transition-colors duration-100 ease-out hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            <Mono
+              value="NkQ8razSuKBNXSfcS7U5t7esj9BQ7EMGfxC1Zr2eMLYwLA6dd221WUAAfdXuQ9NhCN23Ygz7BKUF7y785g6Zqcb"
+              label="Transaction signature"
+              className="text-muted-foreground"
+            />
+          </a>
         </div>
       </div>
     </div>

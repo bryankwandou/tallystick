@@ -32,7 +32,7 @@ export default function LedgerPage() {
               </caption>
               <thead>
                 <tr className="border-b border-border">
-                  {["Id", "Agent", "Job", "Amount", "Slot", "State"].map((h) => (
+                  {["Id", "Agent", "Job", "Amount", "Signature", "State"].map((h) => (
                     <th
                       key={h}
                       scope="col"
@@ -67,8 +67,26 @@ export default function LedgerPage() {
                       <td className="py-4 pr-4 text-right align-top font-mono tnum text-[13px]">
                         {toSol(s.amountLamports)}
                       </td>
-                      <td className="py-4 pr-4 text-right align-top font-mono tnum text-[13px] text-muted-foreground">
-                        {s.slot ? s.slot.toLocaleString("en-US") : "—"}
+                      <td className="py-4 pr-4 align-top">
+                        {s.signature ? (
+                          <a
+                            href={`https://explorer.solana.com/tx/${s.signature}?cluster=devnet`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="rounded-sm underline decoration-hairline underline-offset-4 transition-colors duration-100 ease-out hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                          >
+                            <Mono
+                              value={s.signature}
+                              truncate={7}
+                              label="Transaction signature"
+                              className="text-muted-foreground"
+                            />
+                          </a>
+                        ) : (
+                          <span className="text-[12px] text-muted-foreground">
+                            not submitted
+                          </span>
+                        )}
                       </td>
                       <td className="py-4 align-top">
                         <StateBadge ok={ok} />
@@ -115,10 +133,10 @@ export default function LedgerPage() {
             <p className="max-w-[68ch] text-[13px] leading-relaxed text-muted-foreground">
               The state column is recomputed from each row&rsquo;s two digests
               rather than read from a stored flag, so a tampered record fails
-              here rather than passing quietly. Devnet signatures are absent
-              until the settlement script runs against a funded keypair &mdash;
-              the rows below are digest-complete but not yet on chain, and the
-              page says so instead of showing a signature it does not have.
+              here rather than passing quietly. Signatures resolve on Solana
+              Explorer against devnet. The held row carries no signature because
+              nothing was ever submitted &mdash; the release condition did not
+              hold, so there is no transaction to point at.
             </p>
             <div className="mt-4">
               <ButtonLink href="/verify" variant="secondary">
