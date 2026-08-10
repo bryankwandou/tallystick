@@ -106,3 +106,109 @@
     font-feature-settings: "tnum";
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Motion — six primitives, no more.
+   Each one communicates a state change, causality, or feedback. Anything that
+   only decorates was cut. All are disabled under prefers-reduced-motion.
+
+   1. rise      — content entering on first mount (hero, section headers)
+   2. stagger   — list children entering in sequence, first mount only
+   3. seam-draw — the seam extending outward from its notch
+   4. settle    — the moment two halves match; the only celebratory motion
+   5. scan      — indeterminate progress while a receipt is being verified
+   6. press     — tactile feedback on button activation
+--------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes ts-rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes ts-seam-draw {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes ts-settle {
+    0% {
+      transform: rotate(45deg) scale(1);
+    }
+    45% {
+      transform: rotate(45deg) scale(1.42);
+    }
+    100% {
+      transform: rotate(45deg) scale(1);
+    }
+  }
+
+  @keyframes ts-scan {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(320%);
+    }
+  }
+
+  .anim-rise {
+    animation: ts-rise 420ms cubic-bezier(0, 0, 0.2, 1) both;
+  }
+
+  /* Stagger: first mount only. Re-renders must not re-trigger this. */
+  .anim-stagger > * {
+    animation: ts-rise 380ms cubic-bezier(0, 0, 0.2, 1) both;
+  }
+  .anim-stagger > *:nth-child(1)  { animation-delay: 0ms; }
+  .anim-stagger > *:nth-child(2)  { animation-delay: 60ms; }
+  .anim-stagger > *:nth-child(3)  { animation-delay: 120ms; }
+  .anim-stagger > *:nth-child(4)  { animation-delay: 180ms; }
+  .anim-stagger > *:nth-child(5)  { animation-delay: 240ms; }
+  .anim-stagger > *:nth-child(6)  { animation-delay: 300ms; }
+
+  .anim-seam-draw {
+    transform-origin: center;
+    animation: ts-seam-draw 520ms cubic-bezier(0, 0, 0.2, 1) both;
+  }
+
+  .anim-settle {
+    animation: ts-settle 340ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Documented exception to the no-gradient rule in brand.md: this is a masked
+     progress sweep, not brand decoration. It communicates in-flight
+     verification and has no non-gradient equivalent. Do not reuse the
+     technique for decorative surfaces. */
+  .anim-scan::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inline-size: 28%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--primary),
+      transparent
+    );
+    opacity: 0.5;
+    animation: ts-scan 1150ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  .anim-press {
+    transition: transform 100ms cubic-bezier(0, 0, 0.2, 1);
+  }
+  .anim-press:active {
+    transform: scale(0.975);
+  }
+}

@@ -43,3 +43,9 @@ next-env.d.ts
 # brand-design preview artifacts
 .brand-preview/
 *.css.bak
+
+# Rust / WASM
+contract/target/
+dev.log
+.env
+.env.local

@@ -1,0 +1,31 @@
+package z:tenant-settle@0.1.0;
+
+world tenant-settle {
+  // Capability set. The contract can do exactly what is imported here and
+  // nothing else — an interface that is not imported is not reachable.
+  //
+  // Note that host:interfaces/http is deliberately absent. This contract does
+  // not make outbound calls; it reads a claim, recomputes a digest over the
+  // work record, and returns a receipt. Keeping the HTTP interface out means
+  // the enclave cannot exfiltrate a claim even if the contract logic is wrong.
+  import host:tenant/tenant-context@1.0.0;
+  import host:interfaces/logging@2.1.0;
+  import host:interfaces/kv-store@2.1.0;
+
+  export contracts;
+}
+
+interface contracts {
+  record generic-input {
+    input:        option<list<u8>>,
+    user-profile: option<list<u8>>,
+    context:      option<list<u8>>,
+  }
+
+  // Produce the receipt half for a submitted claim.
+  issue-receipt: func(req: generic-input) -> result<list<u8>, string>;
+
+  // Recompute both halves and report whether they agree. Callers should treat
+  // the returned verdict as authoritative rather than storing a match flag.
+  check-halves: func(req: generic-input) -> result<list<u8>, string>;
+}
