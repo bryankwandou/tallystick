@@ -49,3 +49,8 @@ contract/target/
 dev.log
 .env
 .env.local
+
+.t3n-state.json
+DID.txt
+settlements.json
+mkkey*.mjs
