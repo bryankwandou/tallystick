@@ -1,6 +1,5 @@
 contract/target
-scripts
-.brand-preview
-docs
+/scripts
+/.brand-preview
+/docs
 dev.log
-mkkey2.mjs
