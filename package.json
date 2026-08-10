@@ -6,7 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "contract:build": "cd contract && cargo build --target wasm32-wasip2 --release",
+    "contract:test": "cd contract && cargo test",
+    "contract:verify": "wasm-tools component wit contract/target/wasm32-wasip2/release/z_tenant_settle.wasm",
+    "test:component": "node scripts/test-component.mjs",
+    "t3n:auth": "tsx scripts/01-authenticate.ts",
+    "t3n:register": "tsx scripts/02-register-contract.ts",
+    "settle": "tsx scripts/03-settle-devnet.ts"
   },
   "dependencies": {
     "@solana/web3.js": "^1.98.4",
@@ -18,6 +25,8 @@
     "tsx": "^4.23.12"
   },
   "devDependencies": {
+    "@bytecodealliance/jco": "^1.27.0",
+    "@bytecodealliance/preview2-shim": "^0.20.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

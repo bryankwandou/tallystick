@@ -181,7 +181,50 @@ required. Worth reconciling the two statements.
 
 ---
 
-## 5 · Reproducing the reported `handshake()` failure
+## 5 · Transpiled components cannot be loaded without a manual import map
+
+**Severity:** low — affects local testing, not production execution.
+
+**Expected.** A component built per the walkthrough should be testable outside
+the enclave. `jco transpile` is the standard route for that.
+
+**Actual.** The transpiled module emits a bare ESM import for each host
+interface:
+
+```js
+import { info } from 'host:interfaces/logging';
+```
+
+Node cannot resolve it:
+
+```
+Error [ERR_UNSUPPORTED_ESM_URL_SCHEME]: Only URLs with a scheme in: file, data,
+and node are supported by the default ESM loader. Received protocol 'host:'
+```
+
+**Workaround.** Supply a stub and map it at transpile time:
+
+```bash
+npx jco transpile z_tenant_settle.wasm -o .jco \
+  --map host:interfaces/logging=./host-logging.js
+```
+
+Every imported host interface needs its own stub, and — because of finding #1 —
+the set of interfaces requiring stubs is whatever the component actually calls,
+not what `world.wit` declares. Working that out means running
+`wasm-tools component wit` first.
+
+**Suggestion.** Ship a `@terminal3/host-shims` package providing test doubles for
+the host interfaces, or document the `--map` invocation in the test page of the
+walkthrough. A contract author's first instinct is to test locally, and this is
+the first wall they hit.
+
+`scripts/test-component.mjs` in this repository implements the workaround and
+runs 9 assertions against the compiled component.
+
+---
+
+## 6 · Reproducing the reported `handshake()` failure
 
 Two other participants reported SDK-level problems on the bounty listing:
 
