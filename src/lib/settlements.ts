@@ -12,9 +12,13 @@ export type Settlement = {
   contract: string;
   contractVersion: string;
   amountLamports: number;
-  /** Hash of the agent-signed claim. */
+  /** Units the agent asserted it completed. */
+  unitsClaimed: number;
+  /** Units the enclave could actually account for. */
+  unitsObserved: number;
+  /** SHA-256 over the canonical encoding of the agent's claim. */
   claimHash: string;
-  /** Hash of the receipt emitted inside the enclave. */
+  /** SHA-256 over the same encoding, using the observed unit count. */
   receiptHash: string;
   signature: string;
   slot: number;
@@ -24,6 +28,12 @@ export type Settlement = {
 
 export const LAMPORTS_PER_SOL = 1_000_000_000;
 
+/**
+ * Digests below are real SHA-256 values produced by the same canonical encoding
+ * the Rust contract uses — regenerate with `node scripts/seed-from-digests.mjs`.
+ * Signatures are empty until a funded run of `scripts/03-settle-devnet.ts`
+ * fills them in; the UI renders that state honestly rather than inventing one.
+ */
 export const SETTLEMENTS: Settlement[] = [
   {
     id: "4f2a",
@@ -31,10 +41,12 @@ export const SETTLEMENTS: Settlement[] = [
     contract: "z:8f2c9a4e17bd35006ea1cc4820f9b7d3:settle",
     contractVersion: "0.1.0",
     amountLamports: 250_000_000,
-    claimHash: "9c1d4f7a2b6e08d35a4c7f1e93b0d68c",
-    receiptHash: "9c1d4f7a2b6e08d35a4c7f1e93b0d68c",
-    signature: "5Ku8pWq3nT9xB4mZyR2vHc9Ld6Ea1TsGf7Nj3Qw8Zx",
-    slot: 402_118_774,
+    unitsClaimed: 1284,
+    unitsObserved: 1284,
+    claimHash: "2cdad4867c37aa98bbe5ed03c8d6164fd01399a28fc30f452483c085e1035efa",
+    receiptHash: "2cdad4867c37aa98bbe5ed03c8d6164fd01399a28fc30f452483c085e1035efa",
+    signature: "",
+    slot: 0,
     settledAt: "2026-08-10T09:12:44Z",
     job: "Reconcile 1,284 invoice rows against ledger export",
   },
@@ -44,10 +56,12 @@ export const SETTLEMENTS: Settlement[] = [
     contract: "z:8f2c9a4e17bd35006ea1cc4820f9b7d3:settle",
     contractVersion: "0.1.0",
     amountLamports: 120_000_000,
-    claimHash: "3e8b0a1c5d9f24760b8e3a1d7c04f592",
-    receiptHash: "3e8b0a1c5d9f24760b8e3a1d7c04f592",
-    signature: "2Hs4nRv7kP1yD9cLxT6mWq3bZa8Ej5Ug0Fn2Vt7Rd",
-    slot: 402_117_902,
+    unitsClaimed: 42,
+    unitsObserved: 42,
+    claimHash: "f1b7f7ccb9b931f666b31ca186ac92b33caafc7e265cf9be2110fd45fe3794c2",
+    receiptHash: "f1b7f7ccb9b931f666b31ca186ac92b33caafc7e265cf9be2110fd45fe3794c2",
+    signature: "",
+    slot: 0,
     settledAt: "2026-08-10T08:47:11Z",
     job: "Fetch and normalise 42 supplier price sheets",
   },
@@ -57,9 +71,11 @@ export const SETTLEMENTS: Settlement[] = [
     contract: "z:8f2c9a4e17bd35006ea1cc4820f9b7d3:settle",
     contractVersion: "0.1.0",
     amountLamports: 80_000_000,
-    /* Halves diverge: the agent claimed 512 rows, the enclave counted 500. */
-    claimHash: "d04a7f39e1b85c62a0f4d81397e2b6ca",
-    receiptHash: "b71c2e46a8d09f351e7b0c53f8a91d47",
+    unitsClaimed: 512,
+    unitsObserved: 500,
+    /* The agent reported 512 units; the enclave counted 500. */
+    claimHash: "fbcaf223d7db10feea76c32aa0d053dc5022338102dcf1d2bb91d6f8797aa12e",
+    receiptHash: "277b709b3686956e1595b399192785026f6b90c4aa3016e6ba19feee91f6caf1",
     signature: "",
     slot: 0,
     settledAt: "2026-08-10T08:19:03Z",

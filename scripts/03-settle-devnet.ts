@@ -27,6 +27,7 @@ import {
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { banner, ok, step, fail } from "./_util";
@@ -36,31 +37,25 @@ const MEMO_PROGRAM = new PublicKey(
 );
 const RPC = process.env.SOLANA_RPC ?? "https://api.devnet.solana.com";
 
-/* --- digest: mirrors contract/src/digest.rs exactly ---------------------- */
+/* --- digest: must match contract/src/digest.rs byte for byte -------------- */
 
-const OFFSET = 0x6c62272e07bb014262b821756295c58dn;
-const PRIME = 0x0000000001000000000000000000013bn;
-const MASK = (1n << 128n) - 1n;
-
-function fnv1a128(bytes: Uint8Array): bigint {
-  let h = OFFSET;
-  for (const b of bytes) {
-    h = (h ^ BigInt(b)) & MASK;
-    h = (h * PRIME) & MASK;
-  }
-  return h;
-}
-
-/** Length-prefixed, fixed field order — so ("ab","c") ≠ ("a","bc"). */
+/**
+ * Length-prefixed, fixed field order — so ("ab","c") and ("a","bc") cannot
+ * encode identically. Mirrors `canonical()` in the Rust contract.
+ */
 function canonical(fields: [string, string][]): Uint8Array {
-  const parts: number[] = [];
   const enc = new TextEncoder();
+  const parts: number[] = [];
+  const be32 = (n: number) => [
+    (n >>> 24) & 0xff,
+    (n >>> 16) & 0xff,
+    (n >>> 8) & 0xff,
+    n & 0xff,
+  ];
   for (const [k, v] of fields) {
     const kb = enc.encode(k);
     const vb = enc.encode(v);
-    const kl = new Uint8Array(new Uint32Array([kb.length]).buffer).reverse();
-    const vl = new Uint8Array(new Uint32Array([vb.length]).buffer).reverse();
-    parts.push(...kl, ...kb, ...vl, ...vb);
+    parts.push(...be32(kb.length), ...kb, ...be32(vb.length), ...vb);
   }
   return new Uint8Array(parts);
 }
@@ -71,16 +66,13 @@ function digestOf(
   units: number,
   amount: number,
 ): string {
-  return fnv1a128(
-    canonical([
-      ["agent", did],
-      ["job", job],
-      ["units", String(units)],
-      ["amount", String(amount)],
-    ]),
-  )
-    .toString(16)
-    .padStart(32, "0");
+  const bytes = canonical([
+    ["agent", did],
+    ["job", job],
+    ["units", String(units)],
+    ["amount", String(amount)],
+  ]);
+  return createHash("sha256").update(bytes).digest("hex");
 }
 
 /* --- jobs ---------------------------------------------------------------- */

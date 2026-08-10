@@ -100,11 +100,17 @@ function Hero() {
             </ButtonLink>
           </div>
 
+          {/* Figures that can be checked against the repository, not invented
+              traction metrics. */}
           <dl className="mt-12 grid max-w-md grid-cols-3 gap-6 border-t border-hairline pt-6">
-            <Stat label="Settled" value="0.25" unit="SOL" />
-            <Stat label="Match time" value="1.4" unit="s" />
-            <Stat label="Disputed" value="0" unit="" />
+            <Stat label="Digest" value="SHA" unit="256" />
+            <Stat label="Contract tests" value="11" unit="pass" />
+            <Stat label="Component tests" value="9" unit="pass" />
           </dl>
+          <p className="mt-4 max-w-md text-[12px] leading-relaxed text-muted-foreground">
+            Figures above are what the repository verifies, not usage numbers.
+            Devnet settlement is scripted and awaiting a funded keypair.
+          </p>
         </div>
 
         {/* Right: the receipt */}
@@ -184,16 +190,21 @@ function ReceiptPanel() {
             </p>
           </div>
           <div>
-            <FieldLabel>Slot</FieldLabel>
-            <p className="font-mono tnum text-[19px] font-medium">402,118,774</p>
+            <FieldLabel>Units</FieldLabel>
+            <p className="font-mono tnum text-[19px] font-medium">
+              1,284
+              <span className="ml-1.5 text-[12px] font-normal text-muted-foreground">
+                / 1,284
+              </span>
+            </p>
           </div>
         </div>
 
         <div className="mt-5">
-          <FieldLabel>Devnet signature</FieldLabel>
+          <FieldLabel>Digest — both halves</FieldLabel>
           <Mono
-            value="5Ku8pWq3nT9xB4mZyR2vHc9Ld6Ea1TsGf7Nj3Qw8Zx"
-            label="Transaction signature"
+            value="2cdad4867c37aa98bbe5ed03c8d6164fd01399a28fc30f452483c085e1035efa"
+            label="Settlement digest"
             className="text-muted-foreground"
           />
         </div>

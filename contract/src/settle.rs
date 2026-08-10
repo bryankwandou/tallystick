@@ -1,6 +1,6 @@
 //! Settlement logic: issue a receipt, and check a claim against it.
 
-use crate::digest::{canonical, fnv1a_128, hex32};
+use crate::digest::digest_hex;
 use serde::{Deserialize, Serialize};
 
 /// What the agent asserts it did. Signed by the agent, so the agent cannot
@@ -46,12 +46,12 @@ pub struct IssueInput {
 fn digest_of(job: &str, units: u64, amount: u64, did: &str) -> String {
     let units_s = units.to_string();
     let amount_s = amount.to_string();
-    hex32(fnv1a_128(&canonical(&[
+    digest_hex(&[
         ("agent", did),
         ("job", job),
         ("units", &units_s),
         ("amount", &amount_s),
-    ])))
+    ])
 }
 
 pub fn issue_receipt(input: &[u8]) -> Result<Vec<u8>, String> {

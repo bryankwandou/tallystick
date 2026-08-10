@@ -112,9 +112,13 @@ export default function LedgerPage() {
           </ul>
 
           <div className="mt-10 border-t border-hairline pt-6">
-            <p className="text-[13px] text-muted-foreground">
-              Signatures resolve on Solana Explorer against devnet. Verify any
-              row yourself rather than taking the state badge at face value.
+            <p className="max-w-[68ch] text-[13px] leading-relaxed text-muted-foreground">
+              The state column is recomputed from each row&rsquo;s two digests
+              rather than read from a stored flag, so a tampered record fails
+              here rather than passing quietly. Devnet signatures are absent
+              until the settlement script runs against a funded keypair &mdash;
+              the rows below are digest-complete but not yet on chain, and the
+              page says so instead of showing a signature it does not have.
             </p>
             <div className="mt-4">
               <ButtonLink href="/verify" variant="secondary">

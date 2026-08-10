@@ -210,14 +210,28 @@ function Result({ s, onReset }: { s: Settlement; onReset: () => void }) {
         <p className="text-[13.5px] leading-relaxed">{s.job}</p>
 
         <div className="mt-6">
-          <FieldLabel>Claim hash — signed by agent</FieldLabel>
+          <FieldLabel>
+            Claim — agent reported{" "}
+            <span className="font-mono text-foreground/70">
+              {s.unitsClaimed.toLocaleString("en-US")}
+            </span>{" "}
+            units
+          </FieldLabel>
           <Mono value={s.claimHash} label="Claim hash" />
         </div>
 
         <Seam matched={ok} className="my-5" />
 
         <div>
-          <FieldLabel>Receipt hash — written in enclave</FieldLabel>
+          <FieldLabel>
+            Receipt — enclave observed{" "}
+            <span
+              className={`font-mono ${ok ? "text-foreground/70" : "text-destructive"}`}
+            >
+              {s.unitsObserved.toLocaleString("en-US")}
+            </span>{" "}
+            units
+          </FieldLabel>
           <Mono
             value={s.receiptHash}
             label="Receipt hash"
@@ -227,9 +241,12 @@ function Result({ s, onReset }: { s: Settlement; onReset: () => void }) {
 
         {!ok && (
           <p className="mt-4 rounded-md border border-destructive/30 bg-destructive/5 px-3.5 py-3 text-[12.5px] leading-relaxed text-muted-foreground">
-            The escrow program held the funds. The agent reported more work than
-            the enclave could account for, so the release condition never
-            evaluated true. The mismatch stays attributed to{" "}
+            The escrow held the funds. The agent reported{" "}
+            <span className="font-mono tnum text-foreground/80">
+              {(s.unitsClaimed - s.unitsObserved).toLocaleString("en-US")}
+            </span>{" "}
+            more units than the enclave could account for, so the release
+            condition never evaluated true. The mismatch stays attributed to{" "}
             <span className="font-mono text-foreground/80">{s.agentDid}</span>.
           </p>
         )}

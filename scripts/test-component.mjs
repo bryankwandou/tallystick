@@ -89,7 +89,11 @@ check("honest claim produces matching halves", () => {
   const r = issue(512, 512);
   assert(r.matched === true, `expected matched, got ${r.matched}`);
   assert(r.claim_hash === r.receipt_hash, "digests should be equal");
-  assert(r.claim_hash.length === 32, `digest should be 32 hex chars, got ${r.claim_hash.length}`);
+  assert(
+    r.claim_hash.length === 64,
+    `digest should be 64 hex chars (SHA-256), got ${r.claim_hash.length}`,
+  );
+  assert(/^[0-9a-f]{64}$/.test(r.claim_hash), "digest should be lowercase hex");
 });
 
 check("overstated claim diverges", () => {

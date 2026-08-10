@@ -57,3 +57,4 @@ mkkey*.mjs
 .vercel
 
 .jco/
+settlements.seed.txt
