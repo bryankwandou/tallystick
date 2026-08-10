@@ -54,3 +54,4 @@ dev.log
 DID.txt
 settlements.json
 mkkey*.mjs
+.vercel
